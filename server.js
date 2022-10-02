@@ -1,10 +1,17 @@
 import express from 'express';
-import bodyParseer from 'body-parser'
+// import bodyParser from 'body-parser';
+import usersRoutes from './routes/users.js';
+import cors from "cors";
+
 
 const app = express()
 const PORT = 5000
 
-app.use(bodyParseer.json());
+app.use(cors());
+
+// app.use(bodyParser.json());
+
+app.use('/users' , usersRoutes);
 
 app.get('/', (req, res) => res.send ('Hello from Homepage.'));
 
