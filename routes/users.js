@@ -20,6 +20,7 @@ db.run(sql)
 router.get('/',(req, res) => {
    db.all("SELECT * FROM lists", (err, rows) => {
       res.send(rows);
+      console.log(err)
    })
 });
 
@@ -33,48 +34,35 @@ const newList = {
 }
 lists.push(newList)
 
-// lists.push({...list, id: uuidv4()});
-
 db.run("INSERT INTO lists(title, post) VALUES(?,?)", title, post)
 res.send(JSON.stringify({message: 'successfully added'}))
 
 });
 
-//  router.get('/:id', (req,res) => {
-//     const {id} = req.params;
-
-//     const foundList = lists.find((list) => list.id === id);
-
-//     res.send(foundList);
-
-//  });
-
 router.delete('/:id', (req,res) => {
    const {id} = req.params;
 
-   //lists = lists.filter((list) => list.id !== id)
-
-   sql = `DELETE FROM lists WHERE = id= ?`;
+   sql = `DELETE FROM lists WHERE id= ?`;
    db.run(sql, id)
-   res.send (`List with the ${id} deleted from the database.`);
+   res.send (`List with the id ${id} deleted from the database.`);
 
 })
 
-router.patch('/:id', (req, res) => {
+router.patch('/:id', bodyParser.json(), (req, res) => {
    const {id} = req.params;
 
-   const listUpdated = lists.find((list) => list.id === id);
+   // const listUpdated = lists.find((list) => list.id === id);
+   // const {title, post} = req.body;
+   // if(title) listUpdated.title = title;
+   // if(post) listUpdated.post = post;
 
-   const {title, post} = req.body;
+    let title = req.body["title"];
+    let post = req.body["post"]
 
-   if(title) listUpdated.title = title;
-   if(post) listUpdated.post = post;
-
-   sql = `UPDATE lists SET title = ?, post = ?  WHERE id = ?`;
-   db.run(sql, $(id), $(title), $(post))
-   res.send(`List with the id ${id} has been updated`);
+   sql = `UPDATE lists SET title = ?, post = ?  WHERE id = ${id}`,
+   db.run(sql, title, post )
+   res.send(JSON.stringify({message:`List with the id ${id} has been updated`}));
 })
-
 
 
 export default router;
